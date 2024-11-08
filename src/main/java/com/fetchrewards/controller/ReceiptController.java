@@ -24,7 +24,7 @@ public class ReceiptController {
     }
 
     @PostMapping("/process")
-    public ResponseEntity<ReceiptResponse> process(@RequestBody @Valid ReceiptRequest processRequest) {
+    public ResponseEntity<ReceiptResponse> processReceipt(@RequestBody @Valid ReceiptRequest processRequest) {
         log.info("Process request received: " + processRequest);
         String id = receiptService.processReceipt(processRequest);
         return new ResponseEntity<>(new ReceiptResponse(id), HttpStatus.CREATED);
