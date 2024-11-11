@@ -33,9 +33,9 @@ The unit test cases and integration test cases are ran at the time of building t
 
 2. **Running the Application**:
 
-    
+    ```
     docker run receipt-processor
-    
+    ```
 
 Your application should now be running on `http://localhost:8080/`
 
