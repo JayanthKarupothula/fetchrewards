@@ -16,7 +16,6 @@ public class TotalRoundDollarRule extends ReceiptPointRuleCommand {
 
     @Override
     public void applyRule() {
-        // Use remainder / modulus operator to get only cent amount
         BigDecimal totalCents = receipt.getTotal().remainder(BigDecimal.ONE);
         if (totalCents.signum() == 0) {
             receipt.addPoints(pointsToAdd);

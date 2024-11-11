@@ -36,7 +36,6 @@ public class ItemGroupCountRuleUnitTest {
     @ParameterizedTest
     @MethodSource(value = "goodItemGroups")
     void awardsPointsForItemGroups(List<ReceiptItem> itemList, int groupMultiple, int pointsPerGroup, int expectedPoints) {
-        // setup
         receipt.setItems(itemList);
         receipt.setPoints(0);
         options = ReceiptPointRuleOptions.builder()
@@ -46,10 +45,8 @@ public class ItemGroupCountRuleUnitTest {
         itemGroupCountCommand = new ItemGroupCountRule(receipt, options);
         int additionalPoints = expectedPoints;
 
-        // when
         itemGroupCountCommand.applyRule();
 
-        // then
         assertEquals(receipt.getPoints(), expectedPoints);
         verify(receipt, times(1)).addPoints(anyInt());
     }
@@ -58,15 +55,12 @@ public class ItemGroupCountRuleUnitTest {
     public static List<Arguments> goodItemGroups() {
 
         List<TestValues> tests = List.of(
-                // ItemListSize, GroupMultiple, PointsPerGroup, ExpectedPoints
 
-                // One group
                 new TestValues(1, 1, 5, 5),
                 new TestValues(2, 2, 5, 5),
                 new TestValues(5, 5, 5, 5),
                 new TestValues(27, 27, 5, 5),
 
-                // Two+ groups
                 new TestValues(4, 2, 5, 10),
                 new TestValues(6, 2, 5, 15),
                 new TestValues(8, 2, 5, 20),
@@ -76,7 +70,6 @@ public class ItemGroupCountRuleUnitTest {
                 new TestValues(12, 3, 5, 20),
                 new TestValues(15, 3, 5, 25),
 
-                // Higher values
                 new TestValues(4, 2, 17, 34),
                 new TestValues(6, 2, 20, 60),
                 new TestValues(8, 2, 111, 444),
@@ -94,7 +87,7 @@ public class ItemGroupCountRuleUnitTest {
     @ParameterizedTest
     @MethodSource(value = "noItemGroups")
     void doesNotAwardPointsForNoItemGroups(List<ReceiptItem> itemList, int groupMultiple, int pointsPerGroup, int expectedPoints) {
-        // setup
+
         receipt.setItems(itemList);
         receipt.setPoints(0);
         options = ReceiptPointRuleOptions.builder()
@@ -103,10 +96,8 @@ public class ItemGroupCountRuleUnitTest {
                 .build();
         itemGroupCountCommand = new ItemGroupCountRule(receipt, options);
 
-        // when
         itemGroupCountCommand.applyRule();
 
-        // then
         assertEquals(receipt.getPoints(), 0);
         verify(receipt, times(0)).addPoints(anyInt());
     }
@@ -115,9 +106,7 @@ public class ItemGroupCountRuleUnitTest {
     public static List<Arguments> noItemGroups() {
 
         List<TestValues> tests = List.of(
-                // ItemListSize, GroupMultiple, PointsPerGroup, ExpectedPoints
 
-                // No groups
                 new TestValues(0, 1, 5, 0),
                 new TestValues(2, 3, 5, 0),
                 new TestValues(3, 4, 5, 0),
@@ -147,7 +136,6 @@ public class ItemGroupCountRuleUnitTest {
             this.pointsPerGroup = pointsPerGroup;
             this.expectedPoints = expectedPoints;
 
-            // Generate list of receipt items with specified size
             this.itemList = new ArrayList<>();
             for (int i = 0; i < itemListSize; i++) {
                 this.itemList.add(new ReceiptItem("description", new BigDecimal("1.23")));

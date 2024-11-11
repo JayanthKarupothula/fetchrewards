@@ -46,7 +46,7 @@ public class ReceiptControllerIntegrationTest {
                 "    ]," +
                 "\"total\": \"9.00\" }";
 
-        // Perform POST request to process receipt
+
         ReceiptResponse response = this.webTestClient
                 .post()
                 .uri("/receipts/process")
@@ -57,7 +57,7 @@ public class ReceiptControllerIntegrationTest {
                 .expectBody(ReceiptResponse.class)
                 .returnResult().getResponseBody();
 
-        // Verify ID is generated and points are calculated
+
         assertNotNull(response.getId());
         receiptId = response.getId();
         verify(receiptService, times(1)).processReceipt(any(ReceiptRequest.class));
@@ -66,7 +66,6 @@ public class ReceiptControllerIntegrationTest {
     @Test
     @Order(2)
     void retrievePoints() {
-        // Perform GET request to retrieve points for the processed receipt
         ReceiptPointsResponse response = this.webTestClient
                 .get()
                 .uri("/receipts/" + receiptId + "/points")
@@ -76,16 +75,14 @@ public class ReceiptControllerIntegrationTest {
                 .returnResult().getResponseBody();
 
         assertNotNull(response);
-        assertTrue(response.getPoints() > 0);// assuming points were calculated
+        assertTrue(response.getPoints() > 0);
         assertEquals(109, response.getPoints());
-        System.out.println("Points in integration test: " + response.getPoints());
         verify(receiptService, times(1)).getReceipt(receiptId);
     }
 
     @Test
     @Order(3)
     void retrievePointsNotFound() {
-        // Perform GET request for a nonexistent ID to confirm 404 response
         this.webTestClient
                 .get()
                 .uri("/receipts/nonexistent_id/points")

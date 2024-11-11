@@ -37,22 +37,19 @@ public class RetailerNameCharCountRuleUnitTest {
     @ParameterizedTest
     @MethodSource(value = "roundTotalInputs")
     void awardsPointsForAlphaNumericsOnly(String retailerName, int expectedCharCount) {
-        // setup
+
         receipt.setRetailer(retailerName);
         receipt.setPoints(0);
         int additionalPoints = expectedCharCount * options.getRetailerNameCharCountMultiplier();
 
-        // when
         retailerCharCountRule.applyRule();
 
-        // then
         assertEquals(receipt.getPoints(), additionalPoints);
         verify(receipt, times(1)).addPoints(additionalPoints);
     }
 
     public static List<Arguments> roundTotalInputs() {
 
-        // Test case names with varying alphanumeric
         Map<String, Integer> namePoints = new LinkedHashMap<String, Integer>(Map.of(
                 " ", 0,
                 "!", 0,
@@ -66,7 +63,6 @@ public class RetailerNameCharCountRuleUnitTest {
                 "0987654321Wal1234567890greens0987654321", 39)
         );
 
-        // For every input, create 4 test cases where non-alphanumeric chars are inserted somewhere into string
         Map<String, Integer> nonAlphaNumericCombinations = new LinkedHashMap<>();
         namePoints.entrySet().forEach(
                 entry -> {

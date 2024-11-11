@@ -34,7 +34,6 @@ public class PurchaseHourInRangeRuleUnitTest {
     @ParameterizedTest
     @MethodSource(value = "insideThresholdInputs")
     void awardsHoursInBetweenThreshold(LocalTime purchaseTime, LocalTime thresholdStart, LocalTime thresholdEnd) {
-        // setup
         receipt.setPurchaseDateTime(LocalDateTime.of(LocalDate.now(), purchaseTime));
         receipt.setPoints(0);
         options = ReceiptPointRuleOptions.builder()
@@ -45,31 +44,27 @@ public class PurchaseHourInRangeRuleUnitTest {
 
         int additionalPoints = options.getPurchaseTimeInRangePoints();
 
-        // when
         purchaseHourBetweenCommand.applyRule();
 
-        // then
         assertEquals(receipt.getPoints(), 0);
         verify(receipt, times(1)).addPoints(additionalPoints);
     }
 
     public static Stream<Arguments> insideThresholdInputs() {
         return Stream.of(
-                // start == time, time < end
                 Arguments.of(LocalTime.of(0, 0), LocalTime.of(0, 0), LocalTime.of(0, 1)),
                 Arguments.of(LocalTime.of(0, 0), LocalTime.of(0, 0), LocalTime.of(0, 59)),
                 Arguments.of(LocalTime.of(0, 0), LocalTime.of(0, 0), LocalTime.of(1, 0)),
                 Arguments.of(LocalTime.of(2, 0), LocalTime.of(2, 0), LocalTime.of(12, 0)),
                 Arguments.of(LocalTime.of(12, 0), LocalTime.of(12, 0), LocalTime.of(23, 0)),
 
-                // start < time, time == end
                 Arguments.of(LocalTime.of(0, 1), LocalTime.of(0, 0), LocalTime.of(0, 1)),
                 Arguments.of(LocalTime.of(0, 59), LocalTime.of(0, 0), LocalTime.of(0, 59)),
                 Arguments.of(LocalTime.of(1, 0), LocalTime.of(0, 0), LocalTime.of(1, 0)),
                 Arguments.of(LocalTime.of(12, 0), LocalTime.of(2, 0), LocalTime.of(12, 0)),
                 Arguments.of(LocalTime.of(23, 45), LocalTime.of(12, 0), LocalTime.of(23, 45)),
 
-                // start < time, time < end
+
                 Arguments.of(LocalTime.of(0, 2), LocalTime.of(0, 0), LocalTime.of(0, 5)),
                 Arguments.of(LocalTime.of(0, 25), LocalTime.of(0, 10), LocalTime.of(0, 59)),
                 Arguments.of(LocalTime.of(2, 0), LocalTime.of(1, 0), LocalTime.of(5, 0)),
@@ -77,7 +72,7 @@ public class PurchaseHourInRangeRuleUnitTest {
                 Arguments.of(LocalTime.of(12, 20), LocalTime.of(12, 10), LocalTime.of(12, 30)),
 
 
-                // start == time, time == end
+
                 Arguments.of(LocalTime.of(0, 0), LocalTime.of(0, 0), LocalTime.of(0, 0)),
                 Arguments.of(LocalTime.of(23, 59), LocalTime.of(23, 59), LocalTime.of(23, 59))
         );
@@ -86,7 +81,7 @@ public class PurchaseHourInRangeRuleUnitTest {
     @ParameterizedTest
     @MethodSource(value = "outsideThresholdInputs")
     void doesNotAwardHoursOutsideThreshold(LocalTime purchaseTime, LocalTime thresholdStart, LocalTime thresholdEnd) {
-        // setup
+
         receipt.setPurchaseDateTime(LocalDateTime.of(LocalDate.now(), purchaseTime));
         receipt.setPoints(0);
         options = ReceiptPointRuleOptions.builder()
@@ -96,30 +91,28 @@ public class PurchaseHourInRangeRuleUnitTest {
         purchaseHourBetweenCommand = new PurchaseHourInRangeRule(receipt, options);
         int additionalPoints = options.getPurchaseTimeInRangePoints();
 
-        // when
+
         purchaseHourBetweenCommand.applyRule();
 
-        // then
+
         assertEquals(receipt.getPoints(), 0);
         verify(receipt, times(0)).addPoints(additionalPoints);
     }
 
     public static Stream<Arguments> outsideThresholdInputs() {
         return Stream.of(
-                // time < start
+
                 Arguments.of(LocalTime.of(0, 0), LocalTime.of(0, 1), LocalTime.of(0, 0)),
                 Arguments.of(LocalTime.of(0, 30), LocalTime.of(0, 59), LocalTime.of(0, 0)),
                 Arguments.of(LocalTime.of(0, 0), LocalTime.of(1, 0), LocalTime.of(0, 0)),
                 Arguments.of(LocalTime.of(3, 0), LocalTime.of(12, 0), LocalTime.of(0, 0)),
                 Arguments.of(LocalTime.of(23, 58), LocalTime.of(23, 59), LocalTime.of(0, 0)),
 
-                // start == time, time > end
                 Arguments.of(LocalTime.of(0, 59), LocalTime.of(0, 59), LocalTime.of(0, 0)),
                 Arguments.of(LocalTime.of(1, 0), LocalTime.of(1, 0), LocalTime.of(0, 0)),
                 Arguments.of(LocalTime.of(2, 30), LocalTime.of(2, 30), LocalTime.of(1, 0)),
                 Arguments.of(LocalTime.of(23, 0), LocalTime.of(23, 0), LocalTime.of(12, 0)),
 
-                // start < time, time > end
                 Arguments.of(LocalTime.of(0, 2), LocalTime.of(0, 0), LocalTime.of(0, 1)),
                 Arguments.of(LocalTime.of(0, 59), LocalTime.of(0, 0), LocalTime.of(0, 58)),
                 Arguments.of(LocalTime.of(2, 0), LocalTime.of(0, 0), LocalTime.of(1, 0)),

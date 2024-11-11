@@ -30,14 +30,12 @@ public class ReceiptPointRuleCommandFactoryUnitTests {
     @ParameterizedTest
     @MethodSource(value = "getCommandInputs")
     public void getCommandReturnsCommands(ReceiptPointRuleCommandType commandType, Class expectedCommandClass) {
-        // setup
+
         Receipt receipt = mock(Receipt.class);
         ReceiptPointRuleOptions options = mock(ReceiptPointRuleOptions.class);
 
-        // when
         ReceiptPointRuleCommand command = factory.getCommand(commandType, receipt, options);
 
-        // then
         assertEquals(expectedCommandClass, command.getClass());
     }
 
@@ -55,7 +53,6 @@ public class ReceiptPointRuleCommandFactoryUnitTests {
 
     @Test
     public void getAllCommandsReturnsAllCommands() {
-        // setup
         Receipt receipt = mock(Receipt.class);
         ReceiptPointRuleOptions options = mock(ReceiptPointRuleOptions.class);
         HashMap<Class, Integer> commandOccurencesMap = new HashMap<>(Map.of(
@@ -68,17 +65,13 @@ public class ReceiptPointRuleCommandFactoryUnitTests {
                 RetailerNameCharCountRule.class, 0
         ));
 
-        // when
         var commands = factory.getAllCommands(receipt, options);
 
-
-        // Count occurrences of each command class
         commands.forEach(ruleCommand -> {
             Class commandClass = ruleCommand.getClass();
             commandOccurencesMap.put(commandClass, commandOccurencesMap.get(commandClass) + 1);
         });
 
-        // Each command occurred once
         commandOccurencesMap.values().forEach(commandCount -> assertEquals(1, commandCount));
         assertEquals(commands.size(), ReceiptPointRuleCommandType.values().length);
     }

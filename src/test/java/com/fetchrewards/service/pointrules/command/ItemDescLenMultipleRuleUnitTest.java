@@ -37,7 +37,6 @@ public class ItemDescLenMultipleRuleUnitTest {
     @ParameterizedTest
     @MethodSource(value = "allGoodThreeMultipleValues")
     void awardsTrimmedLengthMultiples(List<ReceiptItem> items, BigDecimal multiplier, int multiple, int expectedPoints) {
-        // setup
         receipt.setItems(items);
         receipt.setPoints(0);
         options = ReceiptPointRuleOptions.builder()
@@ -47,10 +46,9 @@ public class ItemDescLenMultipleRuleUnitTest {
         itemDescLenMultipleRule = new ItemDescLenMultipleRule(receipt, options);
         int additionalPoints = expectedPoints;
 
-        // when
         itemDescLenMultipleRule.applyRule();
 
-        // then
+
         assertEquals(receipt.getPoints(), expectedPoints);
         verify(receipt, times(1)).addPoints(anyInt());
     }
@@ -76,7 +74,6 @@ public class ItemDescLenMultipleRuleUnitTest {
                 new TestValues("   Klarbrunn 12-PK 12 FL OZ  ", "12.00", 3)
         );
 
-        // Create multiple groups of items and their sums of expected values
         List<TestValuesGroup> testValuesGroups = createItemListGroupsFromTestValues(threeMultipleTestValues);
         return testValuesGroups.stream()
                 .map(group -> Arguments.of(
@@ -92,7 +89,6 @@ public class ItemDescLenMultipleRuleUnitTest {
     @ParameterizedTest
     @MethodSource(value = "someBadThreeMultipleValues")
     void awardsSomeTrimmedLengthMultiples(List<ReceiptItem> items, BigDecimal multiplier, int multiple, int expectedPoints) {
-        // setup
         receipt.setItems(items);
         receipt.setPoints(0);
         options = ReceiptPointRuleOptions.builder()
@@ -102,10 +98,9 @@ public class ItemDescLenMultipleRuleUnitTest {
         itemDescLenMultipleRule = new ItemDescLenMultipleRule(receipt, options);
         int additionalPoints = expectedPoints;
 
-        // when
         itemDescLenMultipleRule.applyRule();
 
-        // then
+
         assertEquals(receipt.getPoints(), expectedPoints);
         verify(receipt, times(1)).addPoints(anyInt());
     }
@@ -130,7 +125,7 @@ public class ItemDescLenMultipleRuleUnitTest {
                 new TestValues("   Klarbrunn 12-PK 12 FL O ", "12.00", 0)
         );
 
-        // Create multiple groups of items and their sums of expected values
+
         List<TestValuesGroup> testValuesGroups = createItemListGroupsFromTestValues(threeMultipleTestValues);
         return testValuesGroups.stream()
                 .map(group -> Arguments.of(
@@ -146,7 +141,7 @@ public class ItemDescLenMultipleRuleUnitTest {
     @ParameterizedTest
     @MethodSource(value = "allBadThreeMultipleValues")
     void doesNotAwardBadTrimmedLengthMultiples(List<ReceiptItem> items, BigDecimal multiplier, int multiple, int expectedPoints) {
-        // setup
+
         receipt.setItems(items);
         receipt.setPoints(0);
         options = ReceiptPointRuleOptions.builder()
@@ -155,11 +150,8 @@ public class ItemDescLenMultipleRuleUnitTest {
                 .build();
         itemDescLenMultipleRule = new ItemDescLenMultipleRule(receipt, options);
         int additionalPoints = expectedPoints;
-
-        // when
         itemDescLenMultipleRule.applyRule();
 
-        // then
         assertEquals(receipt.getPoints(), expectedPoints);
         verify(receipt, times(1)).addPoints(anyInt());
     }
@@ -184,7 +176,7 @@ public class ItemDescLenMultipleRuleUnitTest {
                 new TestValues("   Klarbrunn 12-PK 12 FL O ", "12.00", 0)
         );
 
-        // Create multiple groups of items and their sums of expected values
+
         List<TestValuesGroup> testValuesGroups = createItemListGroupsFromTestValues(threeMultipleTestValues);
         return testValuesGroups.stream()
                 .map(group -> Arguments.of(
@@ -196,31 +188,22 @@ public class ItemDescLenMultipleRuleUnitTest {
                 .toList();
     }
 
-    /**
-     * Used to combine multiple test values into separate lists with their expected total values
-     * Each test value will also get put into its own list to run as a single unit test with
-     * Receipts need a list of receipt items, and tests needs an expected total value of all of those items
-     *
-     * @return
-     */
+
     public static List<TestValuesGroup> createItemListGroupsFromTestValues(List<TestValues> testValues) {
-        // Create multiple groups of items and their sums of expected values
+
         List<TestValuesGroup> testGroups = new ArrayList<>();
 
-        // Singular items
         testValues.stream().forEach(value -> {
             testGroups.add(new TestValuesGroup(List.of(value), value.expectedValue));
         });
 
-        // All values together
+
         testGroups.add(
                 new TestValuesGroup(testValues,
                         testValues.stream().mapToInt(value -> value.expectedValue).sum()
                 )
         );
 
-        // Arbitrary groups
-        // TODO: remove hardcoded numbers ¯\_(ツ)_/¯
         List<TestValues> group1 = List.of(testValues.get(0), testValues.get(1), testValues.get(2));
         testGroups.add(new TestValuesGroup(group1, group1.stream().mapToInt(v -> v.expectedValue).sum()));
 

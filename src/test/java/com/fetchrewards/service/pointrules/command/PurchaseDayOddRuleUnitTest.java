@@ -37,22 +37,20 @@ public class PurchaseDayOddRuleUnitTest {
     @ParameterizedTest
     @MethodSource(value = "oddDayInputs")
     void awardsPointsForOddDays(int month, int day) {
-        // setup
+
         receipt.setPurchaseDateTime(LocalDateTime.now().withDayOfMonth(day));
         receipt.setPoints(0);
         int additionalPoints = options.getOddPurchaseDayPoints();
 
-        // when
         purchaseDayOddCommand.applyRule();
 
-        // then
         assertEquals(receipt.getPoints(), additionalPoints);
         verify(receipt, times(1)).addPoints(additionalPoints);
     }
 
     public static List<Arguments> oddDayInputs() {
         return List.of(
-                // Month, Day
+
                 Arguments.of(1, 1),
                 Arguments.of(2, 3),
                 Arguments.of(3, 5),
@@ -69,29 +67,26 @@ public class PurchaseDayOddRuleUnitTest {
                 Arguments.of(2, 27),
                 Arguments.of(3, 29),
                 Arguments.of(4, 29)
-              //  Arguments.of(4, 30)
+
         );
     }
 
     @ParameterizedTest
     @MethodSource(value = "evenDayInputs")
     void doesNotAwardPointsForEvenDays(int month, int day) {
-        // setup
+
         receipt.setPurchaseDateTime(LocalDateTime.of(LocalDate.now().withDayOfMonth(month).withDayOfYear(day), LocalTime.now()));
         receipt.setPoints(0);
         int additionalPoints = options.getOddPurchaseDayPoints();
 
-        // when
         purchaseDayOddCommand.applyRule();
 
-        // then
         assertEquals(receipt.getPoints(), 0);
         verify(receipt, times(0)).addPoints(additionalPoints);
     }
 
     public static List<Arguments> evenDayInputs() {
         return List.of(
-                // Month, Day
                 Arguments.of(1, 2),
                 Arguments.of(2, 4),
                 Arguments.of(3, 6),

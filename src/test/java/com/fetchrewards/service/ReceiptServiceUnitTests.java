@@ -56,10 +56,8 @@ public class ReceiptServiceUnitTests {
         doNothing().when(service).applyPoints(receipt, options);
         doReturn(receipt).when(service).convertReceiptRequestToModel(processRequest);
 
-        // when
         service.processReceipt(processRequest);
 
-        // then
         verify(service, times(1)).convertReceiptRequestToModel(processRequest);
         verify(service).applyPoints(same(receipt), any(ReceiptPointRuleOptions.class));
         verify(repository, times(1)).saveReceipt(receipt);
@@ -82,11 +80,9 @@ public class ReceiptServiceUnitTests {
 
         when(ruleFactory.getAllCommands(receipt, options)).thenReturn(mockedRuleCommands);
 
-        // then
         service.applyPoints(receipt, options);
 
 
-        // then
         verify(ruleFactory, times(1)).getAllCommands(receipt, options);
         mockedRuleCommands.forEach(rule -> verify(rule, times(1)).applyRule());
     }
@@ -105,11 +101,8 @@ public class ReceiptServiceUnitTests {
                 ))
                 .build();
 
-
-        // when
         Receipt convertedEntity = service.convertReceiptRequestToModel(receiptRequest);
 
-        //then
         assertEquals(convertedEntity.getPoints(), 0);
         assertEquals(convertedEntity.getRetailer(), receiptRequest.getRetailer());
         assertEquals(convertedEntity.getTotal(), receiptRequest.getTotal());

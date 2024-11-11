@@ -16,11 +16,9 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class ReceiptPointRuleOptions {
 
-    // Constants to use as point rule defaults:
-    // Regex pattern to match any non-alphanumerical chars
+
     public static final String NON_ALPHA_NUMERIC_WHITESPACE_REGEX = "[^a-zA-Z\\d]+";
 
-    // Should be greater than range start in current day, no inverse ranges across multiple days
     private LocalTime purchaseTimeRangeEnd = LocalTime.of(16, 00);
     private LocalTime purchaseTimeRangeStart = LocalTime.of(14, 00);
     private BigDecimal itemDescriptionPointMultiplier = BigDecimal.valueOf(0.20);

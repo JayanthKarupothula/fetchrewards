@@ -1,5 +1,3 @@
-
-
 package com.fetchrewards.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,12 +29,10 @@ import java.util.UUID;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.boot.convert.ApplicationConversionService.configure;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.json.JSONObject;
-import lombok.Builder;
 
 
 @WebMvcTest(ReceiptController.class)
@@ -114,7 +110,7 @@ public class ReceiptControllerUnitTest  {
     public void testGetReceiptPointsNotFound() throws Exception {
         String notFoundUuid = "this_id_is_not_found";
 
-        // Simulating that the receipt does not exist
+
         when(receiptService.getReceipt(notFoundUuid)).thenReturn(null);
 
         mockMvc.perform(get("/receipts/" + notFoundUuid + "/points"))
@@ -134,7 +130,6 @@ public class ReceiptControllerUnitTest  {
     @MethodSource("invalidReceiptRequestFields")
     public void returns4xxOnInvalidReceiptRequestFields(String field, String value) throws Exception {
         processReceiptRequestJson.put(field, value);
-        System.out.println(processReceiptRequestJson);
         mockMvc.perform(post("/receipts/process").contentType(MediaType.APPLICATION_JSON)
                         .content(processReceiptRequestJson.toString()))
                 .andExpect(status().isBadRequest());  // Expect 400 status for invalid input
@@ -159,7 +154,6 @@ public class ReceiptControllerUnitTest  {
     @MethodSource(value = "missingRequestFields")
     public void returns4xxOnMissingReceiptRequestFields(String field) throws Exception {
         processReceiptRequestJson.remove(field);
-        System.out.println(processReceiptRequestJson);
         mockMvc.perform(post("/receipts/process").contentType(MediaType.APPLICATION_JSON)
                         .content(processReceiptRequestJson.toString()))
                 .andExpect(status().isBadRequest());
@@ -179,7 +173,6 @@ public class ReceiptControllerUnitTest  {
     @MethodSource(value = "invalidItemFields")
     public void returns4xxOnInvalidItemFields(JSONArray itemsJson) throws Exception {
         processReceiptRequestJson.put("items", itemsJson);
-        System.out.println(processReceiptRequestJson);
         mockMvc.perform(post("/receipts/process").contentType(MediaType.APPLICATION_JSON)
                         .content(processReceiptRequestJson.toString()))
                 .andExpect(status().isBadRequest());

@@ -10,8 +10,8 @@ are able to run using Docker.
 The app  utilizes the DTO and Command pattern to cleanly award points to each receipt following all the point
 rules. And an options object was also included that can be easily extended to customize each rule, or even disable them.
 
-All classes are unit tested with JUnit and Integration tests are enabled to check the flow of
-from controller -> service -> repository
+All classes are unit tested with JUnit and Integration tests are enabled to check the flow from     
+controller -> service -> repository
 
 The unit test cases and integration test cases are ran at the time of building the docker image.
 ## Development Requirements
@@ -27,14 +27,14 @@ The unit test cases and integration test cases are ran at the time of building t
 1. **Installation**:
     ```
     git clone https://github.com/JayanthKarupothula/fetchrewards.git
-    cd ReceiptProcessor 
-    docker build -t receiptprocessor:latest .
+    cd fetchrewards
+    docker build -t receipt-processor .
     ```
 
 2. **Running the Application**:
 
     
-    docker run -p 8080:8080 receiptprocessor:latest
+    docker run receipt-processor
     
 
 Your application should now be running on `http://localhost:8080/`
@@ -71,7 +71,7 @@ Your application should now be running on `http://localhost:8080/`
     2. open postman and paste below curl command for get api to get the points. Use the id generated from post api
 
         ```
-        curl --location 'localhost:8080/receipts/7a15a566-06da-4919-aeec-e9eb4868186f/points'
+        curl --location 'localhost:8080/receipts/{id}/points'
         ```
 
 

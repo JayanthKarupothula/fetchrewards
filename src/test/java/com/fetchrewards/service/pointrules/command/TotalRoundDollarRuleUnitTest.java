@@ -33,15 +33,12 @@ public class TotalRoundDollarRuleUnitTest {
     @ParameterizedTest
     @MethodSource(value = "roundTotalInputs")
     void roundTotals(BigDecimal total, int startingPoints) {
-        // setup
         receipt.setTotal(total);
         receipt.setPoints(startingPoints);
         int additionalPoints = options.getEvenTotalPoints();
 
-        // when
         roundDollarCommand.applyRule();
 
-        // then
         assertEquals(receipt.getPoints(), startingPoints + additionalPoints);
         verify(receipt, times(1)).addPoints(additionalPoints);
     }

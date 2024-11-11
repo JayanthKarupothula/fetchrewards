@@ -21,7 +21,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-//@ActiveProfiles("test")  // Use a test profile for in-memory or mock data if needed
 public class ReceiptServiceIntegrationTest {
 
     @Autowired
@@ -33,7 +32,6 @@ public class ReceiptServiceIntegrationTest {
     @Autowired
     ReceiptPointRuleOptions defaultPointRuleOptions;
 
-    // Sample receipt request to be used in the tests
     static ReceiptRequest testRequest;
 
     @BeforeAll
@@ -61,11 +59,8 @@ public class ReceiptServiceIntegrationTest {
 
         @Test
         public void processReceiptShouldSaveReceipt() {
-            // When
-            testUuid = receiptService.processReceipt(testRequest);
-            System.out.println("TEST UUID: " + testUuid);
 
-            // Then: Verifying that the repository save and service methods were called
+            testUuid = receiptService.processReceipt(testRequest);
             assertNotNull(testUuid);
             Receipt savedReceipt = receiptRepository.getReceiptById(testUuid).orElse(null);
             assertNotNull(savedReceipt);
@@ -80,10 +75,10 @@ public class ReceiptServiceIntegrationTest {
 
         @Test
         public void getReceiptReturnsReceipt() {
-            // When
+
             Receipt retrievedReceipt = receiptService.getReceipt(testUuid);
 
-            // Then
+
             assertNotNull(retrievedReceipt);
             assertEquals(retrievedReceipt.getPoints(), 109);  // Points verification (assuming rules apply here)
             assertEquals(retrievedReceipt.getId(), testUuid);
@@ -91,8 +86,6 @@ public class ReceiptServiceIntegrationTest {
             assertEquals(retrievedReceipt.getTotal().setScale(2), testRequest.getTotal());
             assertEquals(retrievedReceipt.getPurchaseDateTime().toLocalDate(), testRequest.getPurchaseDate());
             assertEquals(retrievedReceipt.getPurchaseDateTime().toLocalTime().truncatedTo(ChronoUnit.MINUTES), testRequest.getPurchaseTime());
-
-            // Verify array of items was saved correctly
             HashMap<String, BigDecimal> requestItemsMap = new HashMap<>();
             testRequest.getItems().forEach(item -> requestItemsMap.put(item.getShortDescription(), item.getPrice()));
             retrievedReceipt.getItems().forEach(savedItem -> {
@@ -108,11 +101,10 @@ public class ReceiptServiceIntegrationTest {
 
     @Test
     public void getReceiptShouldReturnNullWhenNotFound() {
-        // When
+
         String notFoundUuid = "this_id_is_not_found";
         Receipt retrievedReceipt = receiptService.getReceipt(notFoundUuid);
 
-        // Then: Verify it returns null when no receipt is found
         assertNull(retrievedReceipt);
     }
 }

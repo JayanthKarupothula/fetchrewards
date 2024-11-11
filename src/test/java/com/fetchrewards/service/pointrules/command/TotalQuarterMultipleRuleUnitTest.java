@@ -36,15 +36,13 @@ public class TotalQuarterMultipleRuleUnitTest {
     @ParameterizedTest
     @MethodSource(value = "quarterMultipleInputs")
     void awardsQuarterMultiples(BigDecimal total) {
-        // setup
+
         receipt.setTotal(total);
         receipt.setPoints(0);
         int additionalPoints = options.getQuarterMultiplePoints();
 
-        // when
         quarterMultipleCommand.applyRule();
 
-        // then
         assertEquals(receipt.getPoints(), additionalPoints);
         verify(receipt, times(1)).addPoints(additionalPoints);
     }
@@ -77,7 +75,6 @@ public class TotalQuarterMultipleRuleUnitTest {
 
     public static List<Arguments> notQuarterMultipleInputs() {
 
-        // Generate test case for every cent except for 0.00, 0.25, 0.50. 0.75
         List<BigDecimal> nonQuarterMultiples = new ArrayList<>();
         for (int cents = 1; cents <= 99; cents++) {
             System.out.println(cents);

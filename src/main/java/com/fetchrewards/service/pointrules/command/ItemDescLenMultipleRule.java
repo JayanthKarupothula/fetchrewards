@@ -24,7 +24,6 @@ public class ItemDescLenMultipleRule extends ReceiptPointRuleCommand {
         int additionalPoints = 0;
         for (ReceiptItem item : receipt.getItems()) {
             if (item.getShortDescription().trim().length() % lengthMultiple == 0) {
-                // Multiply price and round up to the nearest int
                 additionalPoints += item.getPrice()
                         .multiply(priceMultiplier)
                         .setScale(0, RoundingMode.UP)

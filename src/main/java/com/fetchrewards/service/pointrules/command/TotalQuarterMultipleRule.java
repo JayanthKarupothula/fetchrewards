@@ -17,7 +17,6 @@ public class TotalQuarterMultipleRule extends ReceiptPointRuleCommand {
 
     @Override
     public void applyRule() {
-        // Use remainder / modulus operator to get only cent amount
         BigDecimal totalCents = receipt.getTotal().remainder(BigDecimal.ONE);
         if (totalCents.remainder(BigDecimal.valueOf(0.25)).signum() == 0) {
             receipt.addPoints(pointsToAdd);
