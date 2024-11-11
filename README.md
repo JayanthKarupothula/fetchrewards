@@ -68,10 +68,10 @@ Your application should now be running on `http://localhost:8080/`
     }'
 
     ```
-    2. open postman and paste below curl command for get api to get the points. Use the id generated from post api
+ 2. open postman and paste below curl command for get api to get the points. Use the id generated from post api
 
-        ```
-        curl --location 'localhost:8080/receipts/{id}/points'
-        ```
+     ```
+     curl --location 'localhost:8080/receipts/{id}/points'
+     ```
 
 
