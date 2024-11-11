@@ -2,7 +2,7 @@
 
 Take-home backend challenge for https://github.com/fetch-rewards
 
-See [docs](docs) for the [original prompt](docs/OriginalPrompt.md) and [API spec](docs/api.yml),
+See [docs](docs) for the [instructions](docs/Instructions.md) and [API spec](docs/api.yml),
 
 This challenge was implemented as a REST API with Java 17, Spring Boot and in memory data repository. The app and tests
 are able to run using Docker.
@@ -24,22 +24,24 @@ The unit test cases and integration test cases are ran at the time of building t
 
 ## Installation && Running
 
-1**Installation**:
+1. **Installation**:
     ```
     git clone https://github.com/JayanthKarupothula/fetchrewards.git
     cd ReceiptProcessor 
     docker build -t receiptprocessor:latest .
     ```
 
-2**Running the Application**:
-    ```
+2. **Running the Application**:
+
+    
     docker run -p 8080:8080 receiptprocessor:latest
-    ```
+    
 
 Your application should now be running on `http://localhost:8080/`
 
 ## Testing with Postman
- 1 . open postman and paste below curl command for post api to process and save the receipt
+ 1. open postman and paste below curl command for post api to process and save the receipt
+
     ```
     curl --location 'localhost:8080/receipts/process' \
     --header 'Content-Type: application/json' \
@@ -64,8 +66,10 @@ Your application should now be running on `http://localhost:8080/`
     ],
     "total": "9.00"
     }'
+
     ```
-    2.  open postman and paste below curl command for get api to get the points. Use the id generated from post api
+    2. open postman and paste below curl command for get api to get the points. Use the id generated from post api
+
         ```
         curl --location 'localhost:8080/receipts/7a15a566-06da-4919-aeec-e9eb4868186f/points'
         ```
