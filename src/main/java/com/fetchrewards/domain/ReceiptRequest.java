@@ -16,27 +16,28 @@ import java.util.List;
 @AllArgsConstructor
 public class ReceiptRequest {
 
-    @NotBlank
+    @NotBlank(message = "Retailer name must not be blank")
+    @NotNull(message = "Retailer name is required")
     String retailer;
 
-    @NotNull
+    @NotNull(message = "Purchase date is required")
     @DateTimeFormat(pattern = "YYYY:MM:dd")
     LocalDate purchaseDate;
 
-    @NotNull
+    @NotNull(message = "Purchase time is required")
     @DateTimeFormat(pattern = "HH:mm")
     LocalTime purchaseTime;
 
     // Cap at max int for now: 2^31 -> 2147483648.00
-    @NotNull
-    @Digits(integer = 10, fraction = 2)
-    @DecimalMin(value = "0.00", inclusive = true)
+    @NotNull(message = "Total is required")
+    @Digits(integer = 10, fraction = 2, message = "Total must have up to 10 integer digits and 2 decimal places")
+    @DecimalMin(value = "0.00", inclusive = true, message = "Total must be non-negative")
     @DecimalMax(value = "2147483647.00", inclusive = true)
     BigDecimal total;
 
     @Valid
-    @NotNull
-    @Size(min = 1)
+    @NotNull(message = "Items are required")
+    @Size(min = 1, message = "At least one item is required")
     List<ItemRequest> items;
 
     @Override

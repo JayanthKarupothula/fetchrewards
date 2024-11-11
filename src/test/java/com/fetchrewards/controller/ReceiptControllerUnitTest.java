@@ -10,9 +10,12 @@ import com.fetchrewards.domain.ReceiptRequest;
 import com.fetchrewards.model.Receipt;
 import com.fetchrewards.service.ReceiptService;
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.JSONArray;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -31,8 +34,11 @@ import static org.mockito.Mockito.*;
 import static org.springframework.boot.convert.ApplicationConversionService.configure;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import org.json.JSONObject;
+import lombok.Builder;
+
+
 @WebMvcTest(ReceiptController.class)
 public class ReceiptControllerUnitTest  {
 
@@ -42,6 +48,24 @@ public class ReceiptControllerUnitTest  {
     @MockBean
     private ReceiptService receiptService;
 
+    private JSONObject processReceiptRequestJson;
+
+
+    @BeforeEach
+    public void setup() throws JSONException {
+
+        String requestJson = "{" +
+                "    'retailer': 'Walgreens'," +
+                "    'purchaseDate': '2023-01-03'," +
+                "    'purchaseTime': '16:04'," +
+                "    'total': '12.34'," +
+                "    'items': [" +
+                "        {'shortDescription': 'Pepsi - 12-oz', 'price': '1.25'}," +
+                "        {'shortDescription': 'Dasani', 'price': '5.1'}," +
+                "    ]" +
+                "}";
+        processReceiptRequestJson = new JSONObject(requestJson);
+    }
 
     @Test
     public void testProcessReceipt() throws Exception{
@@ -85,5 +109,97 @@ public class ReceiptControllerUnitTest  {
 
         verify(receiptService, times(1)).getReceipt(mockUuid);
     }
+
+    @Test
+    public void testGetReceiptPointsNotFound() throws Exception {
+        String notFoundUuid = "this_id_is_not_found";
+
+        // Simulating that the receipt does not exist
+        when(receiptService.getReceipt(notFoundUuid)).thenReturn(null);
+
+        mockMvc.perform(get("/receipts/" + notFoundUuid + "/points"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$").doesNotExist());
+
+        verify(receiptService, times(1)).getReceipt(notFoundUuid);
+    }
+
+    @Test
+    public void testProcessReceiptMissingRequestBody() throws Exception {
+        mockMvc.perform(post("/receipts/process"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidReceiptRequestFields")
+    public void returns4xxOnInvalidReceiptRequestFields(String field, String value) throws Exception {
+        processReceiptRequestJson.put(field, value);
+        System.out.println(processReceiptRequestJson);
+        mockMvc.perform(post("/receipts/process").contentType(MediaType.APPLICATION_JSON)
+                        .content(processReceiptRequestJson.toString()))
+                .andExpect(status().isBadRequest());  // Expect 400 status for invalid input
+
+}
+
+    public static List<Arguments> invalidReceiptRequestFields() {
+        return List.of(
+                Arguments.of("retailer", ""),
+                Arguments.of("retailer", "           "),
+                Arguments.of("purchaseDate", "2023--01-03"),
+                Arguments.of("purchaseDate", "2023-01--03"),
+                Arguments.of("purchaseTime", "24:00"),
+                Arguments.of("purchaseTime", "111:00"),
+                Arguments.of("total", "-1.00"),
+                Arguments.of("total", "2147483648.00"),
+                Arguments.of("total", "1.23 badText")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource(value = "missingRequestFields")
+    public void returns4xxOnMissingReceiptRequestFields(String field) throws Exception {
+        processReceiptRequestJson.remove(field);
+        System.out.println(processReceiptRequestJson);
+        mockMvc.perform(post("/receipts/process").contentType(MediaType.APPLICATION_JSON)
+                        .content(processReceiptRequestJson.toString()))
+                .andExpect(status().isBadRequest());
+    }
+
+    public static List<Arguments> missingRequestFields() throws JSONException {
+        return List.of(
+                Arguments.of("retailer"),
+                Arguments.of("purchaseDate"),
+                Arguments.of("purchaseTime"),
+                Arguments.of("total"),
+                Arguments.of("items")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource(value = "invalidItemFields")
+    public void returns4xxOnInvalidItemFields(JSONArray itemsJson) throws Exception {
+        processReceiptRequestJson.put("items", itemsJson);
+        System.out.println(processReceiptRequestJson);
+        mockMvc.perform(post("/receipts/process").contentType(MediaType.APPLICATION_JSON)
+                        .content(processReceiptRequestJson.toString()))
+                .andExpect(status().isBadRequest());
+    }
+
+    public static List<Arguments> invalidItemFields() throws JSONException {
+        return List.of(
+                Arguments.of(new JSONArray("[]")),
+                Arguments.of(new JSONArray("[ {'price': '0.00'} ]")),
+                Arguments.of(new JSONArray("[ {shortDescription: 'blah'} ]")),
+                Arguments.of(new JSONArray("[ {shortDescription: 'blah', price: '-1.00'} ]")),
+                Arguments.of(new JSONArray("[ {shortDescription: 'blah', price: '2147483648.00'} ]")),
+                Arguments.of(new JSONArray("[ {shortDescription: '', price: '1.23'} ]")),
+                Arguments.of(new JSONArray("[ {shortDescription: '   ', price: '1.23'} ]")),
+                Arguments.of(new JSONArray("[ {shortDescription: 'blah', price: ''} ]")),
+                Arguments.of(new JSONArray("[ {shortDescription: 'blah', price: '     '} ]"))
+        );
+    }
+
+
+
 
 }

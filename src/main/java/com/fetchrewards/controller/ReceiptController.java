@@ -10,9 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/receipts")
 public class ReceiptController {
@@ -24,10 +26,11 @@ public class ReceiptController {
     }
 
     @PostMapping("/process")
-    public ResponseEntity<ReceiptResponse> processReceipt(@RequestBody @Valid ReceiptRequest processRequest) {
+    public ResponseEntity<ReceiptResponse> processReceipt(@Valid @RequestBody ReceiptRequest processRequest) {
         log.info("Process request received: " + processRequest);
         String id = receiptService.processReceipt(processRequest);
-        return new ResponseEntity<>(new ReceiptResponse(id), HttpStatus.CREATED);
+        ReceiptResponse response = new ReceiptResponse(id);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}/points")
